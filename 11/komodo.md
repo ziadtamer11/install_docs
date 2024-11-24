@@ -36,8 +36,8 @@ fastboot devices
 ```
 fastboot flashing unlock
 ```
-* If the device doesn’t automatically reboot, reboot it. It should now be unlocked.
-* Since the device resets completely, you will need to **re-enable USB debugging** to continue.
+  - If the device doesn’t automatically reboot, reboot it. It should now be unlocked.
+  - Since the device resets completely, you will need to **re-enable USB debugging** to continue.
 
 ### Step 2: Flash Additional Partitions and Recovery 
 **This step can be skipped if you have compatible custom recovery.**
@@ -67,23 +67,23 @@ fastboot flash vendor_boot vendor_boot.img
 1. Ensure you have downloaded latest crdroid.zip package from the link above
 
 2. If you are not in recovery, reboot into recovery:
-    With the device powered off, hold Volume Down + Power. Then use the menu to select Recovery Mode.
+  - With the device powered off, hold **Volume Down + Power**. Then use the menu to select Recovery Mode.
 
 3. For clean / first-time installation - Tap **Factory Reset** > **Format data** and continue with the formatting process. This will remove encryption and delete all files stored in the internal storage, as well as format your cache partition (if you have one). This step can be skipped for update installation.
 
 4. Return to the main menu.
 
-5. Sideload the crdroid.zip package but do not rebootbefore you read/followed the rest of the instructions!
-    On the device, tap **Apply Update** > **Apply from ADB** to begin sideload.
-    On the host machine, sideload the package using:
+5. Sideload the crdroid.zip package but do not reboot before you read/followed the rest of the instructions!
+  - On the device, tap **Apply Update** > **Apply from ADB** to begin sideload.
+  - On the host machine, sideload the package using:
 
 ```
-adb -d sideload filename.zip
+adb -d sideload crdroid.zip
 ```
 
 6. After installing ROM package, recovery will ask reboot in recovery again for installing additional packages, reboot in recovery and
-    On the device, tap **Apply Update** > **Apply from ADB** to begin sideload.
-    On the host machine, sideload the package using:
+  - On the device, tap **Apply Update** > **Apply from ADB** to begin sideload.
+  - On the host machine, sideload the package using:
 
 ```
 adb -d sideload gapps.zip

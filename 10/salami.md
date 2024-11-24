@@ -79,12 +79,12 @@ fastboot flash recovery recovery.img
 
 4. Return to the main menu.
 
-5. Sideload the crdroid.zip package but do not rebootbefore you read/followed the rest of the instructions!
+5. Sideload the crdroid.zip package but do not reboot before you read/followed the rest of the instructions!
   - On the device, tap **Apply Update** > **Apply from ADB** to begin sideload.
   - On the host machine, sideload the package using:
 
 ```
-adb -d sideload filename.zip
+adb -d sideload crdroid.zip
 ```
 
 6. After installing ROM package, recovery will ask reboot in recovery again for installing additional packages, reboot in recovery and

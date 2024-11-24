@@ -1,12 +1,12 @@
 ### Pre-installation
-* Download the latest ROM file (referred to as **`crdroid.zip`**).
+* Download the latest ROM file (referred to as **crdroid.zip**).
 * Download support files from the site:
   - **boot.img**
   - **dtbo.img**
   - **vbmeta.img**
   - **vendor_boot.img**
   - **recovery.img**
-* Download the latest GApps (referred to as **`gapps.zip`**).
+* Download the latest GApps (referred to as **gapps.zip**).
 
 *(Files may have YYYYMMDD date in file name, download latest files in that case)*
 

@@ -1,11 +1,11 @@
 ### Pre-installation
-* Download the latest ROM file (referred to as **`crdroid.zip`**).
+* Download the latest ROM file (referred to as **crdroid.zip**).
 * Download support files from the site:
   - **boot.img**
   - **dtbo.img**
   - **vendor_kernel_boot.img**
   - **vendor_boot.img** (this is the recovery image file)
-* Download the latest GApps (referred to as **`gapps.zip`**).
+* Download the latest GApps (referred to as **gapps.zip**).
 
 *(Files may have YYYYMMDD date in file name, download latest files in that case)*
 
@@ -67,7 +67,7 @@ fastboot flash vendor_boot vendor_boot.img
 1. Ensure you have downloaded latest crdroid.zip package from the link above
 
 2. If you are not in recovery, reboot into recovery:
-  - With the device powered off, hold **Volume Down + Power**. Then use the menu to select Recovery Mode.
+  - With the device powered off, hold **Volume Down + Power**. Then use the menu to select **Recovery** mode.
 
 3. For clean / first-time installation - Tap **Factory Reset** > **Format data** and continue with the formatting process. This will remove encryption and delete all files stored in the internal storage, as well as format your cache partition (if you have one). This step can be skipped for update installation.
 

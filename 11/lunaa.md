@@ -9,6 +9,20 @@
 
 * Backup your data to PC, OTG flash drive
 * Make sure you are on latest Realme UI 13 or at least Realme UI 13 firmware installed
+* Now Download latest boot.img,dtbo.img,vendor_boot.img after clicking recovery button
+* Reboot to bootloader and Flash every files 
+
+```
+fastboot flash boot boot.img
+fastboot flash dtbo dtbo.img
+fastboot flash vendor_boot vendor_boot.img
+```
+* Now reboot to recovery
+
+```
+fastboot reboot recovery
+```
+
 * Now in recovery go to factory reset and confirm the reset
 * Reboot to recovery
 * Choose apply update and Apply from ADB

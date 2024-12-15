@@ -1,191 +1,320 @@
-_Starting in crDroid 10.x (Android 14.0) we're switching to retrofitting dynamic partitions, to avoid the constant threat of running out of space in the GPT system partition with any sizeable Google Apps package._
+### Pre-Installation:
 
-_Please do not panic. Resist the temptation to read, or talk to loved ones._
+- Starting in crDroid 10.x (Android 14.0) and onwards, we're using retrofitted dynamic partitions to avoid the constant threat of running out of space in the GPT system partition with any sizeable Google Apps package. Don't panic.
 
-_Have a cookie._
+  This will not permanently alter or damage your device, as it makes no changes to the underlying GPT partition table. Following any ROM's installation guide will overwite the changes, so there are no extra steps to "convert back to normal partitions".
 
-### Prerequisites
+  This does mean that you cannot use TWRP or other custom recovery to install crDroid on the OnePlus 6-series, as they do not have the necessary kernel and dynamic partition layout changes compiled in to support the way we're doing things.
 
-- Ensure you're running OxygenOS 11.1.2.2 firmware on your current slot. Instructions for how to do this are beyond the scope of this guide, but you can always use MSMTool to go back to stock OxygenOS with locked bootloader, and start updating via OTA until you're up to date, or follow the firmware updating guides for enchilada or fajita on the LineageOS wiki.
+- Phone setup:
 
-  If you do not have that firmware installed, grab it for your device from **[here](https://oxygenos.oneplus.net/OnePlus6TOxygen_34.J.62_OTA_0620_all_2111252336_f6eda340d7af4e3e.zip)**
+  Make sure you have tested all functions in stock OxygenOS (VoLTE, VoWiFi, Camera, Bluetooth, GPS, etc.) before unlocking bootloader to install custom ROMs so that your device will be provisioned correctly for IMS services and such.
 
-- An unlocked bootloader (see Funk Wizard's guides in XDA Forums for instructions if you need help to do this), and the understanding that crDroid does not support re-locking the bootloader after installation on this device.
+  Bootloader must be [unlocked](https://xdaforums.com/t/guide-oneplus-6t-fajita-unlock-flash-twrp-root-nandroid-efs-backup.3851789/). Re-locking after installation is not supported.
 
-- A computer with current AOSP "platform-tools" installed or otherwise on your $PATH (the real ones from developer.android.com, not some script-kiddie's all-in-one bundle that's hopelessly out of date), OnePlus USB drivers installed (works for adb and OEM bootloader _fastboot_ commands), and Google's universal ADB drivers installed (needed for fastbootd mode within recovery). Linux and MacOS users: when it comes to drivers, may the odds be ever in your favor!
+  Must have [OxygenOS 11.1.2.2 firmware](https://oxygenos.oneplus.net/OnePlus6TOxygen_34.J.62_OTA_0620_all_2111252336_f6eda340d7af4e3e.zip) in your current slot.  
+  This does NOT mean you need to go back to stock first.  
+  It DOES mean that you have updated firmware partitions since the last time using MSMTool or a "back to stock" fastboot ROM zip.  
+  If you're not sure, follow the firmware updating guide for fajita from the LineageOS wiki [here](https://wiki.lineageos.org/devices/fajita/fw_update/), or [use MSMTool](https://xdaforums.com/t/op6t-latest-10-3-8-collection-of-unbrick-tools.3914746/) to go back to stock OxygenOS with locked bootloader and start updating via OTA until you're up to date.
 
-  If you do not have current platform-tools installed, get it from the official site **[here](https://developer.android.com/studio/releases/platform-tools)**
+- Computer setup:
 
-  If you do not have the OnePlus USB drivers for 6-series, get the installer **[here](https://drive.google.com/file/d/1L7EZGx5mgeQYXO19Vsp9FWu9GXhF45Qs/view)**
+  Must have current AOSP "platform-tools" installed and/or on your $PATH.
 
-  If you do not have the generic Google USB drivers, download them **[here](https://developer.android.com/studio/run/win-usb)**
+  Use current release from [developer.android.com](https://developer.android.com/studio/releases/platform-tools.html), not "all in one" bundles or out-of-date packages from your Linux distro.
 
-### Required Files
+  Must have working adb/fastboot USB drivers.
 
-- Download the LineageOS copy-partitions script from **[here](https://mirrorbits.lineageos.org/tools/copy-partitions-20220613-signed.zip)**
+  For Windows: You need to install [OnePlus USB drivers](https://drive.google.com/file/d/1L7EZGx5mgeQYXO19Vsp9FWu9GXhF45Qs/view) for fastboot in OEM Bootloader, and [Google USB drivers](https://developer.android.com/studio/run/win-usb) for "userspace fastboot" environment within crDroid Recovery.
 
-- Download the needed files for you device from here **[here](https://sourceforge.net/projects/crdroid/files/fajita/10.x/)**
+  NOTE: Use of PowerShell [v7.x or newer](https://github.com/PowerShell/PowerShell/releases), and [Windows Terminal](https://apps.microsoft.com/detail/9N0DX20HK701?hl=en-us&gl=US&ocid=pdpshare) is highly recommended.
 
-- Required device files for first-time retrofit dynamic partitions conversion (or in the case of *dtbo.img*, to ensure you can boot if you've been playing with 4.19 kernel-based builds):
-  - crDroidAndroid-14.0-xxx_boot.img
-  - crDroidAndroid-14.0-xxx_dtbo.img
-  - crDroidAndroid-14.0-xxx_super_empty.img
-  - crDroidAndroid-14.0-xxx_vbmeta.img
-  - ...and then the latest OTA zip for you device (crDroidAndroid-14.0-xxx.zip)
+  For Linux or MacOS: Drivers included in any release within the last few years typically work already.
 
-  *_Do \*\*\*NOT\*\*\* substitute \*any\* of these files with files that you've downloaded elsewhere if you want support for your installation._*
+  For more info/troubleshooting, see [the adb and fastboot guide](https://wiki.lineageos.org/adb_fastboot_guide) on the LineageOS wiki.
 
-### Optional files
+- Required files:
 
-- Recommended Google Apps:
+  On download page, click on "Download older versions" button to see complete file download list. You will need:
 
-  Now that we have enough room thanks to dynamic partitions, we have options!
+  "crDroidAndroid-xxx_boot.img"
 
-  MindTheGapps _should_ always be a good option, regardless of how much Pixel integration the crDroid dev team is including or not at the time:
+  "crDroidAndroid-xxx_dtbo.img"
 
-  **[MindTheGapps 14.0.0-arm64](https://github.com/MindTheGapps/14.0.0-arm64/releases)**
+  "crDroidAndroid-xxx_super_empty.img"
 
-  If you want a bit more Google integration, you can use Gabriel's "crdroid-official" NikGapps elite config. Download here:
+  "crDroidAndroid-xxx_vbmeta.img"
 
-  **[NikGapps recommended bundle](https://nikgapps.com/crdroid-official)**
+  "crDroidAndroid-xxx.zip"
 
-- Magisk/crDroid++ Kernel for KernelSU support:
+  These file names are examples, with "xxx" replacing variable strings like dates & versions.
 
-  - Let's save that kind of thing for after you've booted the first time & finished the Setup Wizard. Best to get a clean SafetyNet/Play Integrity attestation first, then reboot to recovery to flash root tools after.
+  Each release includes updated boot, dtbo, super_empty, and vbmeta img files. Make sure you download a matched set that all have the same version and date in the file name. Do not mix & match.
 
-- Disable_Dm-Verity_ForceEncrypt:
+- Optional files:
 
-  - Go find a fire. Throw yourself in it. _Repeat until you learn better._
+  Google Apps or microG installer zip (see download page for recommended link, or support forum for more options).
 
-### Clean Installation/Retrofit Dynamic Partition Migration steps
+  PROTIP: Save a copy of the Google Apps or microG zip file with your computer backups. It is likely you will need to flash from recovery at a later date; you will need this file!
 
-Notice that each command is prefixed with a **./** This is important. Please keep that prefix when you run each command.
-_... unless you know how to add things to your $PATH and can verify which executable you're running, of course_
+  NOTE: "Disable_Dm-Verity_ForceEncrypt" or other attempts to disable userdata encryption are both unsupported and ***highly*** discouraged.
 
-1. Unzip the **platform-tools-latest-*.zip** file you got earlier to any folder that you want.
 
-2. Move the following files into the extracted platform-tools directory (so that the ROM zip is in the same folder as adb & fastboot binaries, not one level above it or anything else):
+### First Time Installation (Clean Flash):
+_Coming from any other ROM or major Android version_
 
-  - Required device files for first-time installation:
-    - copy-partitions-20220613-signed.zip
-    - crDroidAndroid-14.0-xxx_boot.img
-    - crDroidAndroid-14.0-xxx_dtbo.img
-    - crDroidAndroid-14.0-xxx_super_empty.img
-    - crDroidAndroid-14.0-xxx_vbmeta.img
-    - the latest OTA zip for you device (crDroidAndroid-14.0-xxx.zip)
+***WARNING: The first-time installation process includes formatting userdata, which will erase all contents of the phone's internal storage. Back up all data (photos, downloads, messages, etc.) that you wish to keep before proceeding.***
 
-  - Optional addons:
-    - the Android 14.0 arm64 Google Apps or microG installer zip you decided on (if any)
+Notice that each command is prefixed with a ***"./"***. This is important. Please keep that prefix when you run each command.  
+_(unless you know how to add things to your $PATH and can verify which executable is running, of course)_
 
-3. Open your terminal and navigate to the extracted platform-tools folder. Use **cd** to navigate to the folder.
+- Step 1: On the computer, unzip the "platform-tools-latest-xxx.zip" file you downloaded earlier to any directory from which you can run programs.
 
-  - If you are on Windows, use PowerShell (or Windows Terminal with an updated PowerShell 7 or later). Do ***NOT*** use Command Prompt.
-  - If you are on macOS or Linux, then use your preferred terminal and shell.
+- Step 2: On the computer, move the downloaded files into the extracted "platform-tools" directory (so that they are in the same place as the adb and fastboot executable files), and rename the ".img" files as shown below:
 
-4. Boot/Reboot your phone to the OEM bootloader.
+  "crDroidAndroid-xxx_boot.img" renamed to "boot.img"
 
-  - Do this by unplugging your phone, powering it off, then holding Vol Up + Vol Down + Power until you see a screen with giant green text saying "Start" at the top of the screen.
-  - Verify you have correctly installed OnePlus USB drivers by plugging the USB cable back in, and running **fastboot devices** from the terminal window. You should see your device's serial number in the list of devices attached. If not, try reinstalling drivers, try a different cable, or a different USB port until it works.
+  "crDroidAndroid-xxx_dtbo.img" renamed to "dtbo.img"
 
-5. Run the following to flash the retrofit dynamic partitions boot/recovery image, dtbo image, and the empty vbmeta to the current slot (replacing _crDroidAndroid-14.0-xxx_thing.img_ with the actual filename that you downloaded for each file):
+  "crDroidAndroid-xxx_super_empty.img" renamed to "super_empty.img"
 
-    ```
-    ./fastboot flash boot crDroidAndroid-14.0-xxx_boot.img
-    ./fastboot flash dtbo crDroidAndroid-14.0-xxx_dtbo.img
-    ./fastboot flash vbmeta crDroidAndroid-14.0-xxx_vbmeta.img
-    ```
+  "crDroidAndroid-xxx_vbmeta.img" renamed to "vbmeta.img"
 
-6. Erase the old Android partitions in the current slot with the following:
+  "crDroidAndroid-xxx.zip" (do not rename)
 
-   ```
-   ./fastboot erase system
-   ./fastboot erase odm
-   ./fastboot erase vendor
-   ```
+  (optional) the Google Apps or microG installation zip you decided to use (do not rename)
 
-  - This ensures that we erase any super partition metadata from other ROMs that use retrofit dynamic partitions, no matter if they store the metadata in system, odm, or vendor. If we don't do this, then we may end up encountering errors later on during the wipe-super or sideloading steps.
+- Step 3: On the computer, open the terminal app and navigate to the extracted "platform-tools" directory.
 
-  - This needs to be done only for the current slot and not the other slot. The other slot is handled later in the process.
+  If you are using Windows, use PowerShell. Do NOT use Command Prompt; it will not work correctly.
 
-7. Unplug the USB cable & reboot your phone into recovery.
+  If you are using MacOS or Linux, use your preferred terminal and shell.
 
-  - Do this by using the volume buttons to scroll through the options until you see **Recovery mode**. Press the power button to select that option.
+- Step 4: Boot the phone to OEM bootloader.
 
-8. In recovery, choose **Advanced -> Enter fastboot** to enter fastbootd ("userspace fastboot"), and plug the USB cable back in.
+  Unplug USB cable from the phone, power it off completely, then hold all three hardware buttons (Vol Up + Vol Down + Power) until you see a screen with large green "Start" text at the top of the display. Release all buttons.
 
-  - This is a good time to run **fastboot devices** to make sure that the userspace fastbootd drivers are working. If not, unplug & re-plug the USB cable again or check for driver updates via Device Manager or Windows Update.
+  NOTE: Verify you have working OnePlus USB drivers now by plugging the USB cable back in, and running the following terminal command:
 
-9. Initialize the retrofit super partitions for the current slot:
+  ```
+  ./fastboot devices
+  ```
 
-    ```
-    ./fastboot wipe-super crDroidAndroid-14.x-xxx_super_empty.img
-    ```
+  You should see the phone's serial number in the list of devices attached. If not, troubleshooting options include reinstalling drivers, trying a different cable, or a different USB port, or a USB hub, or modifying udev rules, and so on until it works correctly.
 
-  - When we sideload the crDroid ROM later, update_engine will handle initializing the other slot using the current slot's metadata.
+- Step 5a (if using PowerShell v7+ under Windows, Linux, or MacOS):
 
-WARNING: If fastboot returns some error message about not recognizing **wipe-super** or prints a long help message instead, then that means you are running a very old version of the fastboot executable. Please go back and download the latest version of platform-tools, as mentioned in the _Required Files_ section.
+  Run the following terminal command (flashes the necessary partitions to boot crDroid recovery successfully with needed retrofit dynamic partition support for ROM install, and prepares GPT partitions that will become the backing store for super partition):
 
-10. Choose **Enter recovery** to return to recovery.
+  ```
+  ./fastboot flash boot_a boot.img && ./fastboot flash boot_b boot.img && ./fastboot flash dtbo_a dtbo.img && ./fastboot flash dtbo_b dtbo.img && ./fastboot flash vbmeta_a vbmeta.img && ./fastboot flash vbmeta_b vbmeta.img && ./fastboot erase system_a && ./fastboot erase system_b && ./fastboot erase odm_a && ./fastboot erase odm_b && ./fastboot erase vendor_a && ./fastboot erase vendor_b
+  ```
 
-11. While in recovery, navigate to **Apply update -> Apply from ADB**.
+- Step 5b (if using older built-in PowerShell v1.x or v2.x that came with Windows 7, 8, or 10):
 
-12. Run the following to sideload **copy_partitions.zip** to copy your firmware partitions to the other slot:
+  Older Powershell versions do not understand using "&&" to combine multiple commands into one long line. You will need to copy, paste, and run the commands one at a time as follows:
 
-    ```
-    ./adb sideload copy-partitions-20220613-signed.zip
-    ```
+  ```
+  ./fastboot flash boot_a boot.img
+  ```
 
-  - You *may* receive an error from recovery, which will state the following:
+  ```
+  ./fastboot flash boot_b boot.img
+  ```
 
-    ```
-    > Signature verification failed  
-    > Install anyway?
-    ```
+  ```
+  ./fastboot flash dtbo_a dtbo.img
+  ```
 
-  - Choose the "Yes" option to continue, since this zip doesn't have a signature in the first place.
+  ```
+  ./fastboot flash dtbo_b dtbo.img
+  ```
 
-13. Navigate to **Apply update -> Apply from ADB** again.
+  ```
+  ./fastboot flash vbmeta_a vbmeta.img
+  ```
 
-14. Run the following to sideload crDroid Android, substituting the actual zip file name:
+  ```
+  ./fastboot flash vbmeta_b vbmeta.img
+  ```
 
-    ```
-    ./adb sideload crDroidAndroid-14.0-xxx.zip
-    ```
+  ```
+  ./fastboot erase system_a
+  ```
 
-  - After a successful sideload, the computer will show the process stopping at 47%, and on the phone you'll be prompted to reboot to recovery again in order to continue flashing Addons (like Google Apps or microG, since those are not built into crDroid). Choose "Yes" to reboot into recovery (and the **adb sideload** process on the computer will complete at 47%, possibly with an error message about "no error". Yeah. It's normal, roll with it).
+  ```
+  ./fastboot erase system_b
+  ```
 
-If you encounter any other installation errors when sideloading besides ROM zip sideloading stopping at 47%, run **./adb pull /tmp/recovery.log** in terminal to get logs to share while asking for help.
+  ```
+  ./fastboot erase odm_a
+  ```
 
-15. If you want to run with Google Apps or microG since we don't ship them built-in, now is the time to install. On the phone, navigate to **Apply update -> Apply from ADB** again, and from the terminal window on your computer, run the following (substituting the actual zip file name):
+  ```
+  ./fastboot erase odm_b
+  ```
 
-    ```
-    ./adb sideload <Google Apps package>.zip
-    ```
+  ```
+  ./fastboot erase vendor_a
+  ```
 
-16. Since this is a clean install, choose the **Factory reset** option, and choose a filesystem format for the userdata partition (ext4 is old reliable, f2fs may provide a very slight performance advantage).
+  ```
+  ./fastboot erase vendor_b
+  ```
 
-17. Choose **Reboot system now**
+  NOTE: You will see a message after running the "./fastboot erase" commands asking if you meant to format instead. You can safely disregard this message.
 
-### Update installation steps:
+- Step 6: Unplug the USB cable & reboot the phone into recovery.
 
-** Option 1: From OTA Updater **
+  Use the volume buttons to page through the boot options until you see "Recovery mode". Press the power button to select that option.
 
-1. Open **Settings > System > Updater** on the phone. Before loading an update to install, choose **Preferences** from the menu and turn on the **Prioritize update process** and **Delete updates when installed** toggles. Now either check for updates, or choose **Local update** from the menu & select the desired ROM zip file from your phone's internal storage.
+  NOTE: The phone might vibrate and reboot to the "Bootloader Unlocked" splash screen twice before entering recovery. This is normal, and is a result of the two-stage init process our kernel uses for enabling dynamic partition support.
 
-2. Once it has finished verifying the update, choose **Continue** to begin installation.
+- Step 7: On the phone, you should see the crDroid Recovery screen (white text with orange accent colors on black background). Tap to choose "Advanced" then "Enter fastboot" to enter "userspace fastboot" mode, and plug the USB cable back into phone.
 
-_Protip: Enable "Stay awake while charging" in Developer Options, or use the "Caffeine" QS tile to keep the screen on, or just set the Display timeout to 10 minutes to cut the installation time from 2 hours down to less than 10 minutes. It slows down drastically if the screen goes off._
+  NOTE: Verify the computer has working USB drivers for "userspace fastboot" mode now by running the following terminal command:
 
-** Option 2: From Recovery **
+  ```
+  ./fastboot devices
+  ```
 
-1. Make sure you have the *same Google Apps or microG installation zips* (or updated versions of the same Android version/architecture) as when you did the initial clean installation available to sideload. If you change to different GApps now, things will get broken.
+  You should see the phone's serial number in the list of devices attached. If not, follow typical USB device driver troubleshooting as needed, same as before.
 
-2. Reboot phone to recovery and connect USB cable to computer once you're in the crDroid recovery environment. Open a terminal on the computer and run **adb devices** to verify that the phone is visible to the computer.
+- Step 8: Run the following terminal commands (initializes the retrofit super partitions with metadata for this ROM's configuration, in both slots):
 
-3. On the phone, choose **Apply update -> Apply from ADB** to begin the phone listening for an update. On the computer, run **adb sideload path/to/crdroid.zip** (substituting the correct path & filename).
+  ```
+  ./fastboot --slot a wipe-super super_empty.img
+  ```
 
-4. On the computer, the process will freeze at 47%, and on the phone you'll see it's prompting you to reboot to recovery to install addons (like Google Apps). Choose "Yes" on the phone to reboot to recovery now, and notice that the **adb sideload** process has finished on the computer with an error message about "no error". This is "normal". _Thanks, Google!_
+  then
 
-5. If you have any addons to flash (Google Apps, microG, custom kernel zips, etc) now is the time to **adb sideload** them. On the phone, choose **Apply update -> Apply from ADB** to start the phone listening, and then run **adb sideload path/to/installation.zip** from the computer for each thing you need to install. *Recovery does not process addon.d OTA survival scripts like the booted OTA updater in Settings does, so you canNOT skip installing the Google Apps zip now if you previously had them installed, or it will ruin your current installation if you reboot without them.*
+  ```
+  ./fastboot --slot b wipe-super super_empty.img
+  ```
 
-6. On the phone, choose **Reboot system now**.
+  WARNING: If fastboot on the computer returns an error message about not recognizing "wipe-super" or prints a long help message instead, then that means you are either running a very old version of the fastboot executable or the phone is still in OEM bootloader instead of recovery-based fastbootd. Please go back and download the latest version of platform-tools as mentioned in the "Required files" section, and/or fix the computer's driver situation so that you can send fastboot commands while the phone is in "Enter fastboot" mode from within crDroid Recovery. This is NOT optional.
+
+- Step 9: Choose "Enter recovery" on the phone to return to recovery, then choose "Apply update" then "Apply from ADB" so that the phone is waiting to receive a sideloaded installation package from the computer.
+
+- Step 10: On the computer, run the following terminal command to sideload crDroid Android, substituting the actual zip file name:
+
+  ```
+  ./adb sideload crDroidAndroid-xxx.zip
+  ```
+
+  Normally the process will pause at 47% on the computer, and on the phone you will be prompted to reboot to recovery again in order to continue flashing addons (such as Google Apps or microG, since those are not built into crDroid).
+
+  Choose "Yes" on the phone to reboot into recovery. When the phone reboots, the "adb sideload" process on computer will complete at 47%, possibly with an error message about "no error", and give you a prompt again. This is "normal".
+
+  NOTE: If you encounter any other installation errors when sideloading besides ROM zip sideloading stopping at 47%, please run the following command in terminal to save recovery logs before asking for help:
+
+  ```
+  ./adb pull -a /tmp/recovery.log
+  ```
+
+- Step 11: Once the phone has rebooted back into recovery, choose "Apply update" then "Apply from ADB" again.
+
+- Step 12: Run the following terminal command to sideload crDroid Android a second time (so it gets written to the other slot), again substituting the actual zip file name:
+
+  ```
+  ./adb sideload crDroidAndroid-xxx.zip
+  ```
+
+  Choose "Yes" again on the phone when prompted to reboot back into recovery.
+
+- Step 13 (Optional): If you want to use Google Apps or microG, now is the time to install the zip from "Optional Files" above.
+
+  On the phone, choose "Apply update" then "Apply from ADB" again, and on the computer, run the following terminal command, substituting the actual zip file name:
+
+  ```
+  ./adb sideload gapps-or-microg-install-package.zip
+  ```
+
+- Step 14: Since this is a clean install, navigate back to the top level menu of recovery on the phone, choose the "Factory reset" option, and confirm.
+
+  NOTE: This is not optional if you want support.
+
+- Step 15: Disconnect the USB cable, navigate back to the top level menu of recovery on the phone, and choose "Reboot system now" to begin first boot.
+
+  NOTE: The phone might vibrate and reboot to the "Bootloader Unlocked" splash screen twice before the crDroid boot animation begins. This is normal, and is a result of the two-stage init process our kernel uses for enabling dynamic partition support.
+
+- Step 16: Post-installation recommendations:
+
+  OnePlus 6-series hardware seems to respond best if you reboot as quickly as possible after completing the first boot Setup Wizard when doing a clean install. Finish tweaking settings after.
+
+  If using Google Apps, you can skip restoring data during first boot Setup Wizard, because it will prompt again to "Continue setting up this device" after rebooting once (as mentioned above).
+
+  If using Google apps, open Play Store and let it update Google components, and check for "Device is certified" attestation result before enabling Developer Options or rooting.
+
+  Disable NFC unless you're actually using it. Google likes to enable this and hide the setting now.
+
+  Disable "Shake to clear recents" option in "crDroid Home" launcher settings, under the "Recents" menu. Our sensor hardware does NOT like that option and it will cause massive slowdowns and SystemUI crashes after a few hours.
+
+
+### Update Installation:
+_Updating to a newer release of the same major Android version_
+
+
+***Option 1: From OTA Updater***
+
+_(Processes addon.d OTA survival scripts, so addons such as Google Apps / microG / Magisk that install survival scripts to "/system/addon.d/" should be preserved automatically)_
+
+- Step 1: Open "Settings > System > System Updates" on the phone. Before loading an update to install, choose "Preferences" from the menu and turn on the "Prioritize update process" and "Delete updates when installed" toggles.
+
+  PROTIP: Use the "Caffeine" Quick Settings tile to keep the screen on for at least 10 minutes, or just temporarily set the Display timeout to 10 minutes to speed up the process. Installation slows down drastically if the screen turns off.
+
+- Step 2: Now either check for updates, or choose "Local update" from the menu & select the desired ROM zip file from the phone's internal storage. Once the installer has verified the update, choose "Install" to begin installation.
+
+  NOTE: Very old versions of crDroid 10.x used different signing keys, and will require updating via recovery instead. See Option 2 below.
+
+- Step 3: Reboot once installation has completed. If the phone screen has turned off or you navigated away from the "System updates" activity to use another app, then the only indication that updating has completed will be that the notification with progress bar has disappeared. Don't panic; just reboot the phone and you should see that the update has been applied.
+
+- Step 4 (Optional): If using Terminator_J's "crDroid++" kernel, reboot to recovery and follow the "adb sideload" procedure to flash the kernel zip which matches the ROM zip version you just installed (see Option 2 - Step 5 below for example).
+
+  NOTE: This will never be automated with an addon.d OTA survival script. Since KernelSU support has to be compiled into the kernel image itself, including a script that restores an older version of the kernel image would defeat the purpose of updating.
+
+- Step 5: Disconnect the USB cable, navigate back to the top level menu of recovery on the phone, and choose "Reboot system now" to continue using crDroid.
+
+
+***Option 2: From Recovery***
+
+_(Does NOT process OTA survival scripts, so you MUST manually re-flash installer zips for any addons you need, such as Google Apps)_
+
+- Step 1: Make sure you have the **same Google Apps or microG installation zips** available to sideload (or updated versions of the same Android version/architecture for your preferred package) as when you performed the initial clean installation. If you try to change to a different GApps bundle now, things will likely break.
+
+- Step 2: Reboot the phone to recovery and connect USB cable to the computer once crDroid recovery has started (white text & orange accent colors on black background).
+
+  Tap to choose "Apply update" then "Apply from ADB" so that the phone is waiting to receive a sideloaded installation package from the computer.
+
+- Step 3: On the computer, run the following terminal command to sideload crDroid Android, substituting the actual zip file name:
+
+  ```
+  ./adb sideload crDroidAndroid-xxx.zip
+  ```
+
+  Normally the process will pause at 47% on the computer, and on the phone you will be prompted to reboot to recovery again in order to continue flashing addons (such as Google Apps or microG, since those are not built into crDroid).
+
+- Step 4: Choose "Yes" on the phone to reboot into recovery. When the phone reboots, the "adb sideload" process on computer will complete at 47%, possibly with an error message about "no error", and give you a prompt again. This is "normal".
+
+  NOTE: If you encounter any other installation errors when sideloading besides ROM zip sideloading stopping at 47%, please run the following command in terminal to save recovery logs before asking for help:
+
+  ```
+  ./adb pull -a /tmp/recovery.log
+  ```
+
+  WARNING: If you are using Google Apps or microG, DO NOT SKIP REBOOTING TO RECOVERY TO INSTALL ADDONS. DO NOT INSTALL ADDONS BEFORE REBOOTING TO RECOVERY. This is REQUIRED due to how slot-switching works.
+
+- Step 5: If you have been using any addons (Google Apps, microG, custom kernel zips, etc.) now is the time to install them into the freshly-flashed slot so that they will continue working. On the phone, choose "Apply update" then "Apply from ADB" again, and on the computer, run the following terminal command, substituting the actual zip file name:
+
+  ```
+  ./adb sideload gapps-or-microg-install-package.zip
+  ```
+
+  Repeat the adb sideload process for all addon zip files you need to reinstall.
+
+  WARNING: Recovery installation ***does NOT process addon.d OTA survival scripts*** (unlike the regular OTA updater in "Settings > System > System updates", which does), so ***you CANNOT skip installing the Google Apps zip now*** if you previously had them installed; or your current installation will be broken and you will need to either factory reset or wipe runtime permissions.
+
+- Step 6: Disconnect the USB cable, navigate back to the top level menu of recovery on the phone, and choose "Reboot system now" to continue using crDroid.
+
+
+_(Instructions adapted with permission from the dynamic partitions conversion guide originally by jabashque and AnierinBliss, with extensive adaptation & updating over the years by Terminator\_J)._

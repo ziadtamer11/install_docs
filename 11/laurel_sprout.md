@@ -24,6 +24,7 @@ adb sideload crDroid.zip
    * If you want Gapps, select Yes, then navigate to Apply Update > ADB sideload and sideload Gapps.
    * If you prefer using the vanilla version, select No and reboot to the system.
 * Reboot and enjoy
+
 ---
 
 ### Update installation:

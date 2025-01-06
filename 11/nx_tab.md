@@ -23,9 +23,11 @@ When it succeeds, press OK.
 
 ### android.ini configuration:
 android.ini is the file that Hekate uses to provide boot settings for Android. In most cases, crDroid's default android.ini will work, but there are additonal settings you can configure if you wish.
-* `emmc=1` Add this if you're using the eMMC instead of an SD card.
-* `usb3_enable=0` By default usb3_enable is set to 1., you may change it to 0 if you're having issues with Wi-Fi or Bluetooth, but note changing it to 0 will break MTP and ADB.
-* `ddr200-enable=1` In Hekate, go to "Console Info" -> microSD and check "Max Bus Speed:". If the Max Bus Speed is DDR200, add this flag. DO NOT ADD THIS FLAG IF THE VALUE IS NOT DDR200! Enabling this flag on a non-DDR200 card will likely result in data loss and/or Android becoming corrupted.
+* `alarms_disable=1` Uncomment to disable notifications for better battery life.
+* `touch_skip_tuning=1` Uncomment if your touchscreen is broken.
+* `usb3_enable=1` Uncomment for faster USB at expense of WiFi/BT quality.
+* `ddr200-enable=1` Uncomment for faster SD speed on models that support it. If you have a Samsung card, this flag will be automatically enabled. To check if you should use this flag, in Hekate, go to "Console Info" -> microSD and check "Max Bus Speed:". If the Max Bus Speed is DDR200, uncomment this flag. Otherwise, leave it commented.
+* `emmc=1` Uncomment for eMMC boot.
 
 ### Partitioning:
 Any data on your MicroSD card will be deleted. Back it up to avoid data loss. 
